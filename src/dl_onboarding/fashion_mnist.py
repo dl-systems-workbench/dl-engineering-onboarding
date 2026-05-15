@@ -84,8 +84,6 @@ def count_trainable_parameters(model: nn.Module) -> int:
     return sum(parameter.numel() for parameter in model.parameters() if parameter.requires_grad)
 
 
-
-
 def split_dataset_train_val(
     *,
     dataset: Dataset,
@@ -218,6 +216,135 @@ def classification_accuracy(
     correct = (predicted_labels == labels).sum().item()
 
     return float(correct / labels.numel())
+
+
+def confusion_matrix_from_logits(
+    logits: torch.Tensor,
+    labels: torch.Tensor,
+    *,
+    num_classes: int,
+) -> torch.Tensor:
+    """Create a confusion matrix with rows=true labels and columns=predictions."""
+    if num_classes <= 0:
+        raise ValueError("num_classes must be positive.")
+
+    if logits.ndim != 2:
+        raise ValueError("logits must have shape (batch_size, num_classes).")
+
+    if labels.ndim != 1:
+        raise ValueError("labels must have shape (batch_size,).")
+
+    if logits.shape[0] != labels.shape[0]:
+        raise ValueError("logits and labels must have the same batch size.")
+
+    if logits.shape[1] != num_classes:
+        raise ValueError("logits second dimension must equal num_classes.")
+
+    predicted_labels = logits.argmax(dim=1)
+    encoded_pairs = labels.to(torch.long) * num_classes + predicted_labels.to(torch.long)
+
+    return torch.bincount(
+        encoded_pairs,
+        minlength=num_classes * num_classes,
+    ).reshape(num_classes, num_classes)
+
+
+def per_class_accuracy_from_confusion_matrix(
+    confusion_matrix: torch.Tensor,
+) -> torch.Tensor:
+    """Compute per-class accuracy from a confusion matrix."""
+    if confusion_matrix.ndim != 2:
+        raise ValueError("confusion_matrix must be 2-dimensional.")
+
+    if confusion_matrix.shape[0] != confusion_matrix.shape[1]:
+        raise ValueError("confusion_matrix must be square.")
+
+    matrix = confusion_matrix.to(dtype=torch.float32)
+    correct_per_class = matrix.diag()
+    support_per_class = matrix.sum(dim=1)
+
+    return torch.where(
+        support_per_class > 0,
+        correct_per_class / support_per_class,
+        torch.full_like(support_per_class, torch.nan),
+    )
+
+
+def evaluate_classifier_with_confusion_matrix(
+    *,
+    model: nn.Module,
+    dataloader: DataLoader,
+    device: torch.device,
+    num_classes: int,
+    loss_fn: nn.Module | None = None,
+    max_batches: int | None = None,
+) -> dict[str, Any]:
+    """Evaluate a classifier and return aggregate metrics plus confusion matrix."""
+    if num_classes <= 0:
+        raise ValueError("num_classes must be positive.")
+
+    if max_batches is not None and max_batches <= 0:
+        raise ValueError("max_batches must be positive when provided.")
+
+    active_loss_fn = loss_fn if loss_fn is not None else nn.CrossEntropyLoss()
+
+    was_training = model.training
+    model.eval()
+
+    total_loss = 0.0
+    total_correct = 0
+    total_examples = 0
+    batches_seen = 0
+    confusion_matrix = torch.zeros(
+        (num_classes, num_classes),
+        dtype=torch.long,
+        device=device,
+    )
+
+    with torch.no_grad():
+        for images, labels in dataloader:
+            images = images.to(device)
+            labels = labels.to(device)
+
+            logits = model(images)
+            loss = active_loss_fn(logits, labels)
+            batch_confusion_matrix = confusion_matrix_from_logits(
+                logits,
+                labels,
+                num_classes=num_classes,
+            ).to(device)
+
+            batch_size = labels.shape[0]
+            predictions = logits.argmax(dim=1)
+
+            total_correct += int((predictions == labels).sum().item())
+            total_examples += int(batch_size)
+            total_loss += float(loss.item()) * batch_size
+            batches_seen += 1
+            confusion_matrix += batch_confusion_matrix
+
+            if max_batches is not None and batches_seen >= max_batches:
+                break
+
+    if was_training:
+        model.train()
+
+    if total_examples == 0:
+        raise RuntimeError("No examples were evaluated.")
+
+    confusion_matrix_cpu = confusion_matrix.cpu()
+    per_class_accuracy = per_class_accuracy_from_confusion_matrix(
+        confusion_matrix_cpu,
+    )
+
+    return {
+        "loss": total_loss / total_examples,
+        "accuracy": total_correct / total_examples,
+        "num_examples": total_examples,
+        "num_batches": batches_seen,
+        "confusion_matrix": confusion_matrix_cpu,
+        "per_class_accuracy": per_class_accuracy,
+    }
 
 
 def evaluate_classifier(

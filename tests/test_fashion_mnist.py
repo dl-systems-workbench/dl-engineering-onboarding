@@ -402,3 +402,88 @@ def test_split_dataset_train_val_rejects_invalid_fraction() -> None:
 
     with pytest.raises(ValueError, match="val_fraction"):
         split_dataset_train_val(dataset=dataset, val_fraction=1.0)
+
+
+def test_confusion_matrix_from_logits_counts_true_predicted_pairs() -> None:
+    import torch
+
+    from dl_onboarding import confusion_matrix_from_logits
+
+    logits = torch.tensor(
+        [
+            [3.0, 1.0, 0.0],
+            [2.0, 3.0, 0.0],
+            [4.0, 1.0, 0.0],
+            [0.0, 1.0, 5.0],
+        ],
+    )
+    labels = torch.tensor([0, 1, 1, 2])
+
+    confusion_matrix = confusion_matrix_from_logits(
+        logits,
+        labels,
+        num_classes=3,
+    )
+
+    expected = torch.tensor(
+        [
+            [1, 0, 0],
+            [1, 1, 0],
+            [0, 0, 1],
+        ],
+    )
+
+    assert torch.equal(confusion_matrix, expected)
+
+
+def test_per_class_accuracy_from_confusion_matrix() -> None:
+    import torch
+
+    from dl_onboarding import per_class_accuracy_from_confusion_matrix
+
+    confusion_matrix = torch.tensor(
+        [
+            [2, 0, 0],
+            [1, 1, 0],
+            [0, 0, 0],
+        ],
+    )
+
+    per_class_accuracy = per_class_accuracy_from_confusion_matrix(confusion_matrix)
+
+    assert torch.allclose(per_class_accuracy[:2], torch.tensor([1.0, 0.5]))
+    assert bool(torch.isnan(per_class_accuracy[2]))
+
+
+def test_evaluate_classifier_with_confusion_matrix_reports_error_analysis() -> None:
+    import torch
+
+    from dl_onboarding import (
+        FashionCNN,
+        evaluate_classifier_with_confusion_matrix,
+        fashion_class_names,
+        make_tiny_classification_dataloader,
+    )
+
+    torch.manual_seed(0)
+
+    dataloader = make_tiny_classification_dataloader(batch_size=10)
+    model = FashionCNN()
+
+    metrics = evaluate_classifier_with_confusion_matrix(
+        model=model,
+        dataloader=dataloader,
+        device=torch.device("cpu"),
+        num_classes=len(fashion_class_names()),
+    )
+
+    confusion_matrix = metrics["confusion_matrix"]
+    per_class_accuracy = metrics["per_class_accuracy"]
+
+    assert confusion_matrix.shape == (
+        len(fashion_class_names()),
+        len(fashion_class_names()),
+    )
+    assert int(confusion_matrix.sum().item()) == metrics["num_examples"]
+    assert per_class_accuracy.shape == (len(fashion_class_names()),)
+    assert 0.0 <= metrics["accuracy"] <= 1.0
