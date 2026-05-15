@@ -2,15 +2,28 @@
 
 ## Current Phase
 
-Phase 1 — PyTorch Engineering Foundations
+Phase 1 — PyTorch Engineering Foundations.
 
 ## Current Milestone
 
-M1 — Tensor, device, autograd, data loading, nn.Module, optimizer, validation, metrics, checkpointing, experiment logging, and first classification dataset foundations
+M1 — Minimal professional supervised PyTorch training stack.
+
+This milestone covers:
+
+- tensor/device/autograd foundations
+- manual training loops
+- Dataset/DataLoader
+- `nn.Module`
+- optimizer-based training
+- train/evaluation metrics
+- checkpointing
+- TensorBoard logging
+- realistic FashionMNIST classification
+- first CNN baseline
 
 ## Active Task
 
-T1.9 — First Realistic Classification Dataset
+T1.10R — Public Repo State Alignment.
 
 ## Completed Tasks
 
@@ -38,6 +51,9 @@ T1.9 — First Realistic Classification Dataset
 | T1.7 | Checkpointing Basics | Accepted |
 | T1.7K | Handoff Refresh and Training Stack Knowledge Capture | Accepted |
 | T1.8 | TensorBoard / Experiment Logging | Accepted |
+| T1.9 | First Realistic Classification Dataset | Accepted |
+| T1.10A | First CNN Baseline: Concept, Architecture Reasoning, and Test Plan | Accepted |
+| T1.10B | First CNN Baseline: Implementation, Tests, and Script | Accepted |
 
 ## Blocked Tasks
 
@@ -47,7 +63,7 @@ None.
 
 | Task ID | Title |
 |---|---|
-| T1.9 | First Realistic Classification Dataset |
-| T1.10 | First CNN Baseline |
-| T1.11 | Train/Validation/Test Split for Real Data |
+| T1.11 | Controlled MLP vs CNN Experiment Comparison |
 | T1.12 | Classification Checkpointing and TensorBoard |
+| T1.13 | Train/Validation/Test Split for Real Data |
+| T1.14 | Confusion Matrix and Per-Class Error Analysis |

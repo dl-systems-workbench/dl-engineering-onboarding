@@ -106,3 +106,22 @@ The current checkpoint proves save/load and restored predictions. It does not ye
 
 Future:
 Add checkpoint roundtrip tests for resume training, best-validation checkpoint selection, and config-aware checkpoint metadata later.
+
+## D0.7 — Public repo is now the source of truth
+
+Decision: The onboarding repository is now public under the `dl-systems-workbench` organization and should be treated as the source of truth for future assistant sessions.
+
+Reason: Public availability makes the repo directly inspectable and reduces dependence on long pasted handoffs. It also makes the repo a stronger professional artifact.
+
+Policy:
+- Future assistants should inspect the public repo before assigning new work.
+- If source code and docs disagree, repair repo state before adding new feature work.
+- `AGENTS.md`, `README.md`, `docs/TASKS.md`, `docs/HANDOFF.md`, and `docs/DECISIONS.md` must stay aligned after meaningful milestones.
+
+Limitations:
+- The repo is still an onboarding repo, not yet a polished portfolio project.
+- Public visibility increases the importance of keeping docs accurate and avoiding secrets or generated artifacts.
+
+Future:
+- Consider GitHub Actions CI after the user understands the local quality loop.
+- Consider GitHub Issues or milestone tags when task tracking outgrows Markdown.
