@@ -23,7 +23,7 @@ This milestone covers:
 
 ## Active Task
 
-T1.10R — Public Repo State Alignment.
+T1.11 — Controlled MLP vs CNN Experiment Comparison.
 
 ## Completed Tasks
 
@@ -54,6 +54,7 @@ T1.10R — Public Repo State Alignment.
 | T1.9 | First Realistic Classification Dataset | Accepted |
 | T1.10A | First CNN Baseline: Concept, Architecture Reasoning, and Test Plan | Accepted |
 | T1.10B | First CNN Baseline: Implementation, Tests, and Script | Accepted |
+| T1.10R | Public Repo State Alignment | Accepted |
 
 ## Blocked Tasks
 
@@ -63,7 +64,7 @@ None.
 
 | Task ID | Title |
 |---|---|
-| T1.11 | Controlled MLP vs CNN Experiment Comparison |
+| T1.12 | Classification Checkpointing and TensorBoard |
 | T1.12 | Classification Checkpointing and TensorBoard |
 | T1.13 | Train/Validation/Test Split for Real Data |
 | T1.14 | Confusion Matrix and Per-Class Error Analysis |
