@@ -312,3 +312,93 @@ def test_fashion_classifier_experiment_checkpoint_restores_predictions(
         restored_logits = restored_model(images)
 
     assert torch.allclose(trained_logits, restored_logits)
+
+
+def test_split_dataset_train_val_uses_expected_lengths() -> None:
+    import torch
+    from torch.utils.data import TensorDataset
+
+    from dl_onboarding import split_dataset_train_val
+
+    dataset = TensorDataset(
+        torch.arange(20, dtype=torch.float32).unsqueeze(dim=1),
+        torch.arange(20, dtype=torch.long),
+    )
+
+    train_subset, val_subset = split_dataset_train_val(
+        dataset=dataset,
+        val_fraction=0.25,
+        seed=0,
+    )
+
+    assert len(train_subset) == 15
+    assert len(val_subset) == 5
+
+
+def test_split_dataset_train_val_has_no_overlap() -> None:
+    import torch
+    from torch.utils.data import TensorDataset
+
+    from dl_onboarding import split_dataset_train_val
+
+    dataset = TensorDataset(
+        torch.arange(20, dtype=torch.float32).unsqueeze(dim=1),
+        torch.arange(20, dtype=torch.long),
+    )
+
+    train_subset, val_subset = split_dataset_train_val(
+        dataset=dataset,
+        val_fraction=0.25,
+        seed=0,
+    )
+
+    train_indices = set(train_subset.indices)
+    val_indices = set(val_subset.indices)
+
+    assert train_indices.isdisjoint(val_indices)
+    assert sorted(train_indices | val_indices) == list(range(20))
+
+
+def test_split_dataset_train_val_is_deterministic_for_same_seed() -> None:
+    import torch
+    from torch.utils.data import TensorDataset
+
+    from dl_onboarding import split_dataset_train_val
+
+    dataset = TensorDataset(
+        torch.arange(20, dtype=torch.float32).unsqueeze(dim=1),
+        torch.arange(20, dtype=torch.long),
+    )
+
+    first_train, first_val = split_dataset_train_val(
+        dataset=dataset,
+        val_fraction=0.25,
+        seed=123,
+    )
+    second_train, second_val = split_dataset_train_val(
+        dataset=dataset,
+        val_fraction=0.25,
+        seed=123,
+    )
+
+    assert first_train.indices == second_train.indices
+    assert first_val.indices == second_val.indices
+
+
+def test_split_dataset_train_val_rejects_invalid_fraction() -> None:
+    import pytest
+    import torch
+    from torch.utils.data import TensorDataset
+
+    from dl_onboarding import split_dataset_train_val
+
+    dataset = TensorDataset(
+        torch.arange(20, dtype=torch.float32).unsqueeze(dim=1),
+        torch.arange(20, dtype=torch.long),
+    )
+
+    with pytest.raises(ValueError, match="val_fraction"):
+        split_dataset_train_val(dataset=dataset, val_fraction=0.0)
+
+    with pytest.raises(ValueError, match="val_fraction"):
+        split_dataset_train_val(dataset=dataset, val_fraction=1.0)

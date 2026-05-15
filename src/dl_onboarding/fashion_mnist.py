@@ -5,7 +5,7 @@ from typing import Any
 
 import torch
 from torch import nn
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import DataLoader, Dataset, Subset, TensorDataset, random_split
 from torch.utils.tensorboard import SummaryWriter
 from torchvision import datasets
 from torchvision.transforms import ToTensor
@@ -82,6 +82,92 @@ class FashionCNN(nn.Module):
 def count_trainable_parameters(model: nn.Module) -> int:
     """Return the number of trainable parameters in a PyTorch module."""
     return sum(parameter.numel() for parameter in model.parameters() if parameter.requires_grad)
+
+
+
+
+def split_dataset_train_val(
+    *,
+    dataset: Dataset,
+    val_fraction: float = 0.1,
+    seed: int = 0,
+) -> tuple[Subset, Subset]:
+    """Split a dataset into deterministic train and validation subsets."""
+    if not 0.0 < val_fraction < 1.0:
+        raise ValueError("val_fraction must be between 0 and 1.")
+
+    dataset_size = len(dataset)
+    if dataset_size < 2:
+        raise ValueError("dataset must contain at least two examples.")
+
+    val_size = round(dataset_size * val_fraction)
+    val_size = max(1, min(dataset_size - 1, val_size))
+    train_size = dataset_size - val_size
+
+    generator = torch.Generator().manual_seed(seed)
+
+    train_subset, val_subset = random_split(
+        dataset,
+        [train_size, val_size],
+        generator=generator,
+    )
+
+    return train_subset, val_subset
+
+
+def make_fashion_mnist_train_val_test_dataloaders(
+    *,
+    data_dir: str | Path = "data",
+    batch_size: int = 64,
+    val_fraction: float = 0.1,
+    seed: int = 0,
+    download: bool = True,
+) -> tuple[DataLoader, DataLoader, DataLoader]:
+    """Create FashionMNIST train, validation, and test DataLoaders."""
+    if batch_size <= 0:
+        raise ValueError("batch_size must be positive.")
+
+    root = Path(data_dir)
+
+    full_train_dataset = datasets.FashionMNIST(
+        root=str(root),
+        train=True,
+        download=download,
+        transform=ToTensor(),
+    )
+    test_dataset = datasets.FashionMNIST(
+        root=str(root),
+        train=False,
+        download=download,
+        transform=ToTensor(),
+    )
+
+    train_dataset, val_dataset = split_dataset_train_val(
+        dataset=full_train_dataset,
+        val_fraction=val_fraction,
+        seed=seed,
+    )
+
+    shuffle_generator = torch.Generator().manual_seed(seed)
+
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=batch_size,
+        shuffle=True,
+        generator=shuffle_generator,
+    )
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=batch_size,
+        shuffle=False,
+    )
+    test_loader = DataLoader(
+        test_dataset,
+        batch_size=batch_size,
+        shuffle=False,
+    )
+
+    return train_loader, val_loader, test_loader
 
 
 def make_fashion_mnist_dataloaders(

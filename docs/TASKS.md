@@ -23,7 +23,7 @@ This milestone covers:
 
 ## Active Task
 
-T1.12 — Classification Checkpointing and TensorBoard.
+T1.13 — Train/Validation/Test Split for Real Data.
 
 ## Completed Tasks
 
@@ -56,6 +56,7 @@ T1.12 — Classification Checkpointing and TensorBoard.
 | T1.10B | First CNN Baseline: Implementation, Tests, and Script | Accepted |
 | T1.10R | Public Repo State Alignment | Accepted |
 | T1.11 | Controlled MLP vs CNN Experiment Comparison | Accepted |
+| T1.12 | Classification Checkpointing and TensorBoard | Accepted |
 
 ## Blocked Tasks
 
@@ -65,5 +66,4 @@ None.
 
 | Task ID | Title |
 |---|---|
-| T1.13 | Train/Validation/Test Split for Real Data |
 | T1.14 | Confusion Matrix and Per-Class Error Analysis |
