@@ -177,3 +177,138 @@ def test_train_fashion_cnn_reports_metrics() -> None:
     assert metrics["final_eval_loss"] > 0.0
     assert 0.0 <= metrics["final_train_accuracy"] <= 1.0
     assert 0.0 <= metrics["final_eval_accuracy"] <= 1.0
+
+
+def test_fashion_classifier_experiment_writes_checkpoint_and_tensorboard(
+    tmp_path,
+) -> None:
+    from pathlib import Path
+
+    import torch
+
+    from dl_onboarding import (
+        FashionCNN,
+        find_tensorboard_event_files,
+        make_tiny_classification_dataloader,
+        train_fashion_classifier_experiment,
+    )
+
+    torch.manual_seed(0)
+
+    train_loader = make_tiny_classification_dataloader(batch_size=10)
+    eval_loader = make_tiny_classification_dataloader(batch_size=10)
+
+    metrics = train_fashion_classifier_experiment(
+        model=FashionCNN(),
+        train_loader=train_loader,
+        eval_loader=eval_loader,
+        run_dir=tmp_path / "outputs",
+        log_dir=tmp_path / "runs",
+        num_epochs=1,
+        learning_rate=0.1,
+        device=torch.device("cpu"),
+    )
+
+    checkpoint_path = Path(str(metrics["checkpoint_path"]))
+    log_dir = Path(str(metrics["log_dir"]))
+
+    assert checkpoint_path.exists()
+    assert log_dir.exists()
+    assert find_tensorboard_event_files(log_dir)
+    assert metrics["model_name"] == "FashionCNN"
+    assert metrics["num_epochs"] == 1
+    assert metrics["device"] == "cpu"
+
+
+def test_fashion_classifier_experiment_checkpoint_has_required_keys(
+    tmp_path,
+) -> None:
+    import torch
+
+    from dl_onboarding import (
+        FashionCNN,
+        make_tiny_classification_dataloader,
+        train_fashion_classifier_experiment,
+    )
+
+    train_loader = make_tiny_classification_dataloader(batch_size=10)
+    eval_loader = make_tiny_classification_dataloader(batch_size=10)
+
+    metrics = train_fashion_classifier_experiment(
+        model=FashionCNN(),
+        train_loader=train_loader,
+        eval_loader=eval_loader,
+        run_dir=tmp_path / "outputs",
+        log_dir=tmp_path / "runs",
+        num_epochs=1,
+        learning_rate=0.1,
+        device=torch.device("cpu"),
+    )
+
+    checkpoint = torch.load(
+        metrics["checkpoint_path"],
+        map_location="cpu",
+        weights_only=True,
+    )
+
+    assert {
+        "model_state_dict",
+        "optimizer_state_dict",
+        "epoch",
+        "metrics",
+        "metadata",
+    }.issubset(checkpoint)
+
+    assert checkpoint["epoch"] == 1
+    assert checkpoint["metadata"]["model_name"] == "FashionCNN"
+    assert checkpoint["metadata"]["learning_rate"] == 0.1
+
+
+def test_fashion_classifier_experiment_checkpoint_restores_predictions(
+    tmp_path,
+) -> None:
+    import torch
+
+    from dl_onboarding import (
+        FashionCNN,
+        make_tiny_classification_dataloader,
+        train_fashion_classifier_experiment,
+    )
+
+    torch.manual_seed(0)
+
+    train_loader = make_tiny_classification_dataloader(batch_size=10)
+    eval_loader = make_tiny_classification_dataloader(batch_size=10)
+    model = FashionCNN()
+
+    metrics = train_fashion_classifier_experiment(
+        model=model,
+        train_loader=train_loader,
+        eval_loader=eval_loader,
+        run_dir=tmp_path / "outputs",
+        log_dir=tmp_path / "runs",
+        num_epochs=1,
+        learning_rate=0.1,
+        device=torch.device("cpu"),
+    )
+
+    images, _ = next(iter(eval_loader))
+
+    model.eval()
+    with torch.no_grad():
+        trained_logits = model(images)
+
+    checkpoint = torch.load(
+        metrics["checkpoint_path"],
+        map_location="cpu",
+        weights_only=True,
+    )
+
+    restored_model = FashionCNN()
+    restored_model.load_state_dict(checkpoint["model_state_dict"])
+    restored_model.eval()
+
+    with torch.no_grad():
+        restored_logits = restored_model(images)
+
+    assert torch.allclose(trained_logits, restored_logits)

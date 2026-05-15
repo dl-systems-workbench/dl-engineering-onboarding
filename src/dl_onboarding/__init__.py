@@ -32,6 +32,7 @@ from dl_onboarding.fashion_mnist import (
     fashion_class_names,
     make_fashion_mnist_dataloaders,
     make_tiny_classification_dataloader,
+    train_fashion_classifier_experiment,
     train_fashion_cnn,
     train_fashion_mlp,
 )
@@ -80,6 +81,7 @@ __all__ = [
     "FashionMLP",
     "FashionCNN",
     "train_fashion_cnn",
+    "train_fashion_classifier_experiment",
     "count_trainable_parameters",
     "train_with_tensorboard_logging",
     "find_tensorboard_event_files",
