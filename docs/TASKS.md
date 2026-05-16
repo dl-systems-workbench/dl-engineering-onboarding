@@ -23,7 +23,7 @@ This milestone covers:
 
 ## Active Task
 
-T1.15 — Phase 1 Classification Stack Recap and Handoff Refresh.
+T2.1 — Inference Entry Point and Checkpoint Loading.
 
 ## Completed Tasks
 
@@ -59,6 +59,7 @@ T1.15 — Phase 1 Classification Stack Recap and Handoff Refresh.
 | T1.12 | Classification Checkpointing and TensorBoard | Accepted |
 | T1.13 | Train/Validation/Test Split for Real Data | Accepted |
 | T1.14 | Confusion Matrix and Per-Class Error Analysis | Accepted |
+| T1.15 | Phase 1 Classification Stack Recap and Handoff Refresh | Accepted |
 
 ## Blocked Tasks
 
@@ -68,4 +69,4 @@ None.
 
 | Task ID | Title |
 |---|---|
-| T2.1 | Inference Entry Point and Checkpoint Loading |
+| T2.2 | Data Normalization and Augmentation Discipline |

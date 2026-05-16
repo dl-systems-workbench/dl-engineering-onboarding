@@ -41,6 +41,11 @@ from dl_onboarding.fashion_mnist import (
     train_fashion_cnn,
     train_fashion_mlp,
 )
+from dl_onboarding.inference import (
+    load_model_from_state_dict_checkpoint,
+    predict_top_k_for_batch,
+    top_k_predictions_from_logits,
+)
 from dl_onboarding.manual_training import (
     make_linear_regression_data,
     mse_loss,
@@ -104,4 +109,7 @@ __all__ = [
     "regression_metrics",
     "make_train_val_dataloaders",
     "evaluate_regression",
+    "load_model_from_state_dict_checkpoint",
+    "predict_top_k_for_batch",
+    "top_k_predictions_from_logits",
 ]
