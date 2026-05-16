@@ -23,7 +23,7 @@ This milestone covers:
 
 ## Active Task
 
-T1.14 — Confusion Matrix and Per-Class Error Analysis.
+T1.15 — Phase 1 Classification Stack Recap and Handoff Refresh.
 
 ## Completed Tasks
 
@@ -58,6 +58,7 @@ T1.14 — Confusion Matrix and Per-Class Error Analysis.
 | T1.11 | Controlled MLP vs CNN Experiment Comparison | Accepted |
 | T1.12 | Classification Checkpointing and TensorBoard | Accepted |
 | T1.13 | Train/Validation/Test Split for Real Data | Accepted |
+| T1.14 | Confusion Matrix and Per-Class Error Analysis | Accepted |
 
 ## Blocked Tasks
 
@@ -67,4 +68,4 @@ None.
 
 | Task ID | Title |
 |---|---|
-| T1.15 | Phase 1 Classification Stack Recap and Handoff Refresh |
+| T2.1 | Inference Entry Point and Checkpoint Loading |

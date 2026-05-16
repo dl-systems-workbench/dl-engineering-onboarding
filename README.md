@@ -1,53 +1,80 @@
 # Deep Learning Engineering Onboarding
 
-This repository tracks my professional onboarding into Deep Learning Engineering and Applied Research Engineering.
+This repository tracks a serious long-term onboarding workflow into Deep Learning Engineering and Applied Research Engineering.
 
-## Purpose
-
-The goal of this repo is to build real engineering habits while learning PyTorch, ML project structure, testing, debugging, experiment tracking, computer vision, transformers, and paper reproduction.
-
-This is a cumulative training repo, not a collection of isolated tutorials.
-
-## Current Phase
-
-Phase 1 — PyTorch Engineering Foundations.
-
-Current accepted milestone:
-
-- Tensor, device, and autograd basics
-- Manual training loop
-- Dataset and DataLoader foundations
-- `nn.Module`
-- Optimizer-based training
-- Train/evaluation metrics
-- Checkpointing basics
-- TensorBoard scalar logging
-- FashionMNIST MLP classification baseline
-- FashionMNIST CNN baseline
-
-## Machine
-
-- OS: Windows 10 + WSL2 Ubuntu
-- CPU: Intel i7-9750H
-- RAM: 16 GB
-- GPU: NVIDIA GTX 1650, 4 GB VRAM
-- Development environment: WSL2 Ubuntu + VS Code
-
-## Team Rules
-
-- Work inside the Linux filesystem, not `/mnt/c`.
-- Use Git for every meaningful change.
-- Use small, reviewable commits.
-- Verify work with commands and evidence.
-- Prefer reproducible environments over global installs.
-- Run small experiments locally; use cloud only when justified.
-- Keep generated data, logs, checkpoints, and outputs out of Git.
+It is not a tutorial scratchpad. It is a cumulative engineering repo for building PyTorch systems, testing habits, experiment discipline, debugging skill, and eventually applied research artifacts.
 
 ## Current Status
 
-The repo has completed its first realistic FashionMNIST classification baselines:
+Current phase:
 
-- `FashionMLP`
-- `FashionCNN`
+    Phase 1 complete pending final recap acceptance.
 
-Next work continues the supervised computer vision training stack with better experiment comparison, logging, checkpointing, and evaluation discipline.
+Latest completed technical milestone:
+
+    FashionMNIST supervised classification stack.
+
+The repo now includes:
+
+- tensor/device/autograd foundations
+- manual training loops
+- Dataset/DataLoader foundations
+- `nn.Module` training
+- optimizer-based training
+- train/evaluation metrics
+- checkpointing basics
+- TensorBoard scalar logging
+- FashionMNIST MLP baseline
+- FashionMNIST CNN baseline
+- controlled MLP vs CNN comparison
+- classification experiment checkpointing
+- train/validation/test split
+- confusion matrix and per-class error analysis
+
+## Main Commands
+
+Run the standard quality gate:
+
+    ./scripts/quality_check.sh
+
+Run the quality gate with PyTorch CUDA verification:
+
+    ./scripts/quality_check.sh --torch
+
+Run the latest FashionMNIST error analysis lab:
+
+    uv run python scripts/fashion_error_analysis_lab.py
+
+Inspect TensorBoard logs after experiment scripts:
+
+    uv run tensorboard --logdir runs/fashion_experiments
+
+## Important Reports
+
+Phase 1 recap:
+
+    docs/reports/phase1_classification_stack.md
+
+## Machine Assumption
+
+This repo is developed on:
+
+- Windows 10
+- WSL2 Ubuntu
+- Python 3.12 via `uv`
+- NVIDIA GTX 1650, 4 GB VRAM
+
+Local machine policy:
+
+- good for development, tests, debugging, and small smoke runs
+- not appropriate for large-scale training or modern foundation-model work
+
+## Repo Rules
+
+- Work inside the Linux filesystem, not `/mnt/c`.
+- Use `uv` for Python commands.
+- Use small, reviewable commits.
+- Run quality gates before committing.
+- Do not commit generated artifacts.
+- Keep `data/`, `runs/`, `outputs/`, checkpoints, logs, caches, and `.venv/` out of Git.
+- Treat the public GitHub repo as the source of truth for future sessions.

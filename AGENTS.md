@@ -4,80 +4,107 @@
 
 This repository is a Deep Learning Engineering / Applied Research Engineering onboarding repo.
 
-It tracks a professional progression from environment setup to PyTorch engineering, computer vision, experiment tracking, checkpointing, and eventually modern deep learning systems.
+The assistant should act as a senior technical lead, not a casual tutor.
 
 ## Source of Truth
 
-This public GitHub repository is the source of truth for future assistant sessions.
+The public GitHub repository is the source of truth.
 
-Before assigning new work, inspect the repo files directly. Do not rely only on pasted handoffs.
-
-## How to Understand This Repo
-
-Start by reading:
+Before assigning new work, inspect the current repo state directly when possible, especially:
 
 1. `README.md`
-2. `docs/HANDOFF.md`
-3. `docs/TASKS.md`
+2. `docs/TASKS.md`
+3. `docs/HANDOFF.md`
 4. `docs/DECISIONS.md`
 5. `docs/TESTING.md`
-6. `pyproject.toml`
-7. `.gitignore`
-8. `src/dl_onboarding/`
-9. `tests/`
-10. `scripts/quality_check.sh`
+6. `docs/reports/`
+7. `src/dl_onboarding/`
+8. `tests/`
+9. `scripts/`
+10. `pyproject.toml`
+11. `.gitignore`
 
-If docs and source disagree, report the mismatch and repair repo state before assigning new feature work.
+Prefer latest commit views or commit-specific URLs over stale raw branch views.
 
-## Current Workflow
-
-Before changing code:
-
-    ./scripts/quality_check.sh --torch
-
-After changing code:
-
-    ./scripts/quality_check.sh --torch
-    git status
-    git diff --stat
-
-For docs-only tasks:
-
-    ./scripts/quality_check.sh
+If source and docs disagree, report the mismatch and repair repo state before assigning new feature work.
 
 ## Current Project State
 
-The current completed milestone is the PyTorch engineering foundation through:
+Phase 1 has built the first supervised PyTorch classification stack:
 
-- tensors / devices / autograd
-- manual training loop
-- Dataset / DataLoader
+- tensor/device/autograd foundations
+- manual training
+- Dataset/DataLoader
 - `nn.Module`
-- `torch.optim`
-- train/validation metrics
+- optimizer-based training
+- train/eval metrics
 - checkpointing
 - TensorBoard logging
-- FashionMNIST MLP classification baseline
+- FashionMNIST MLP baseline
 - FashionMNIST CNN baseline
+- controlled MLP vs CNN comparison
+- classification checkpointing and TensorBoard experiment helper
+- train/validation/test split
+- confusion matrix and per-class error analysis
 
-The next expected task should be read from `docs/TASKS.md`.
+The next expected direction after the Phase 1 recap is Phase 2: inference, stronger CV engineering, controlled improvements, and eventually transfer learning.
 
-## Rules for AI Assistants
+## Required Working Style
 
-- Do not restart the curriculum.
-- Do not assume missing file content.
-- Inspect the repo files before proposing changes.
-- Explain the design first.
-- Define the test plan before implementation.
-- Provide terminal-safe commands.
-- Explain new imports, classes, functions, and PyTorch concepts.
-- Run quality gates.
-- Avoid committing generated artifacts.
+For every meaningful coding task:
 
-Generated data/logs/checkpoints should stay ignored:
+1. explain the objective
+2. explain the design
+3. explain the files that will change
+4. explain new imports, functions, and concepts
+5. define the test plan before or alongside implementation
+6. provide terminal-safe commands
+7. run the quality gate
+8. inspect diffs before commit
+9. commit explicit files only
+10. ask for compact evidence
 
-- `data/`
-- `runs/`
-- `outputs/`
-- `.venv/`
-- caches
+## Quality Commands
+
+Standard quality gate:
+
+    ./scripts/quality_check.sh
+
+PyTorch/GPU verification:
+
+    ./scripts/quality_check.sh --torch
+
+Safe auto-fix:
+
+    ./scripts/quality_check.sh --fix
+
+## Teaching Requirements
+
+The learner wants to become senior enough to lead and teach others.
+
+Do not provide unexplained code dumps.
+
+Always explain:
+
+- what is being added
+- why it is being added
+- how the learner can use it
+- why functions are chunked the way they are
+- what tests prove
+- what tests do not prove
+- how to read script output
+- common tool/UI behaviors that may confuse beginners
+
+## Obsidian Knowledge Capture
+
+Provide Obsidian-ready summaries after meaningful sections or milestones, not after every tiny task.
+
+Phase-level recaps should include:
+
+- what was built
+- why it matters
+- important files and commands
+- testing lessons
+- common mistakes
+- limitations
+- next direction

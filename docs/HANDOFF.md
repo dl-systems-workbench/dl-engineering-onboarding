@@ -1,74 +1,68 @@
 # Handoff State
 
-## User
-
-Junior engineer onboarding into Deep Learning Engineering / Applied Research Engineering.
-
-The long-term goal is to become a strong Deep Learning Engineer / Applied Research Engineer capable of building, debugging, evaluating, reproducing, and explaining modern ML systems.
-
 ## Source of Truth
 
-The repository is public and should be inspected directly before continuing work.
-
-Repository:
+Public repo:
 
     https://github.com/dl-systems-workbench/dl-engineering-onboarding
 
-Future assistants should inspect:
+Future assistants should inspect the repo directly, preferably using latest commit views or commit-specific URLs.
 
-1. `AGENTS.md`
-2. `README.md`
-3. `docs/TASKS.md`
-4. `docs/HANDOFF.md`
-5. `docs/DECISIONS.md`
-6. `docs/TESTING.md`
-7. `pyproject.toml`
-8. `.gitignore`
-9. `src/dl_onboarding/`
-10. `tests/`
-11. `scripts/quality_check.sh`
+## Current Position
 
-If docs and source disagree, repair repo state before assigning new feature work.
+Current phase:
+
+    Phase 1 — PyTorch Engineering Foundations
+
+Current task:
+
+    T1.15 — Phase 1 Classification Stack Recap and Handoff Refresh
+
+Latest accepted technical task:
+
+    T1.14 — Confusion Matrix and Per-Class Error Analysis
+
+Next expected phase after T1.15 acceptance:
+
+    Phase 2 — Computer Vision Engineering and Controlled Improvement
+
+Likely next task:
+
+    T2.1 — Inference Entry Point and Checkpoint Loading
 
 ## Machine
 
 - Windows 10 Pro
-- WSL2 Ubuntu 24.04.3 LTS
+- WSL2 Ubuntu
+- Python 3.12 via `uv`
 - Intel i7-9750H
 - 16 GB RAM
 - NVIDIA GTX 1650, 4 GB VRAM
-- VS Code with WSL workflow
+- VS Code + WSL workflow
 
-## Repo
+Local policy:
 
-- Local path: `~/ai-workspace/dl-engineering-onboarding`
-- Branch: `main`
-- Python target: 3.12
-- Environment manager: `uv`
-- Package layout: `src/`
-- Test runner: `pytest`
-- Formatter/linter: `ruff`
+- use local CPU/GPU for tests, debugging, and tiny experiments
+- use cloud only when larger training or modern foundation-model work justifies it
 
-## Current Phase
+## Current Repo Stack
 
-Phase 1 — PyTorch Engineering Foundations.
+The repo has implemented:
 
-## Current Accepted Stack
-
-The user has built:
-
-1. tensor/device/autograd basics
-2. manual training loop
-3. testing strategy
-4. Dataset/DataLoader
-5. `nn.Module`
-6. `torch.optim.SGD`
-7. train/validation split
-8. regression metrics
-9. checkpoint save/load
-10. TensorBoard scalar logging
-11. FashionMNIST MLP classification baseline
-12. FashionMNIST CNN baseline
+- tensor/device/autograd basics
+- manual training loop
+- Dataset/DataLoader
+- `nn.Module`
+- optimizer-based training
+- train/evaluation metrics
+- checkpoint save/load
+- TensorBoard logging
+- FashionMNIST MLP baseline
+- FashionMNIST CNN baseline
+- controlled MLP vs CNN comparison
+- classification experiment helper with checkpoint and TensorBoard logging
+- train/validation/test dataloaders
+- confusion matrix and per-class error analysis
 
 ## Important Source Files
 
@@ -82,94 +76,98 @@ The user has built:
 - `src/dl_onboarding/fashion_mnist.py`
 - `src/dl_onboarding/__init__.py`
 
-## Current FashionMNIST Components
+## Important FashionMNIST Functions and Classes
 
-`src/dl_onboarding/fashion_mnist.py` includes:
-
-- `fashion_class_names`
 - `FashionMLP`
 - `FashionCNN`
 - `count_trainable_parameters`
 - `make_fashion_mnist_dataloaders`
+- `split_dataset_train_val`
+- `make_fashion_mnist_train_val_test_dataloaders`
 - `classification_accuracy`
 - `evaluate_classifier`
-- `make_tiny_classification_dataloader`
 - `train_fashion_mlp`
 - `train_fashion_cnn`
-
-## Important Tests
-
-- `tests/test_system_info.py`
-- `tests/test_tensor_lab.py`
-- `tests/test_manual_training.py`
-- `tests/test_data_loading.py`
-- `tests/test_module_training.py`
-- `tests/test_optimizer_training.py`
-- `tests/test_evaluation.py`
-- `tests/test_checkpointing.py`
-- `tests/test_experiment_logging.py`
-- `tests/test_fashion_mnist.py`
+- `train_fashion_classifier_experiment`
+- `confusion_matrix_from_logits`
+- `per_class_accuracy_from_confusion_matrix`
+- `evaluate_classifier_with_confusion_matrix`
 
 ## Important Scripts
 
 - `scripts/quality_check.sh`
 - `scripts/verify_torch.py`
-- `scripts/tensor_autograd_lab.py`
-- `scripts/manual_training_lab.py`
-- `scripts/dataloader_lab.py`
-- `scripts/module_training_lab.py`
-- `scripts/optimizer_training_lab.py`
-- `scripts/evaluation_lab.py`
-- `scripts/checkpointing_lab.py`
-- `scripts/tensorboard_lab.py`
 - `scripts/fashion_mnist_lab.py`
 - `scripts/fashion_cnn_lab.py`
+- `scripts/fashion_model_comparison_lab.py`
+- `scripts/fashion_experiment_lab.py`
+- `scripts/fashion_train_val_test_lab.py`
+- `scripts/fashion_error_analysis_lab.py`
 
-## Current Quality Gate
+## Important Tests
 
-Use:
+- `tests/test_fashion_mnist.py`
+- `tests/test_checkpointing.py`
+- `tests/test_experiment_logging.py`
+- `tests/test_evaluation.py`
+- `tests/test_module_training.py`
+
+Current test suite size after T1.14:
+
+    53 tests
+
+## Quality Commands
+
+Standard:
 
     ./scripts/quality_check.sh
 
-For PyTorch/GPU-related changes:
+With PyTorch verification:
 
     ./scripts/quality_check.sh --torch
 
-For safe Ruff auto-fix:
+## Runtime Artifacts
 
-    ./scripts/quality_check.sh --fix
+Do not commit:
 
-## Current Task
+- `data/`
+- `runs/`
+- `outputs/`
+- checkpoints
+- logs
+- caches
+- `.venv/`
 
-T1.10R — Public Repo State Alignment.
+## Known TensorBoard Behavior
 
-## Next Expected Work
+TensorBoard may show both raw and smoothed scalar curves.
 
-After T1.10R is accepted, continue to:
+For very short runs, set smoothing to 0.
 
-    T1.11 — Controlled MLP vs CNN Experiment Comparison
+## Current Limitations
 
-Goal:
+Not yet implemented:
 
-- compare MLP and CNN more fairly
-- use consistent limited-run settings
-- track runtime awareness
-- prepare for TensorBoard classification logging and checkpointing
+- production inference path
+- top-k prediction helper
+- image-level misclassification inspection
+- stronger CNN variants
+- augmentation and normalization experiments
+- optimizer comparisons
+- best checkpoint selection
+- resume training
+- config-driven experiments
+- CI
+- Hugging Face publication
+- transformers
+- paper reproduction
 
-## Important Rules
+## Next Direction
 
-- Do not restart the curriculum.
-- Inspect the public repo before assigning new work.
-- Work under `/home/lily/ai-workspace`, not `/mnt/c`.
-- Use Git for every meaningful change.
-- Keep commits small and reviewable.
-- Do not commit `.venv`, caches, checkpoints, logs, outputs, generated datasets, secrets, or API keys.
-- Use `uv` for Python dependency management.
-- Run the quality gate before committing code.
-- AI may propose; the engineer must inspect, understand, test, and commit.
-- Use local machine for development and small experiments.
-- Use cloud GPU only when justified.
-- Tests should be planned before implementation.
-- Default unit tests should run on CPU.
-- GPU behavior should be checked through scripts or quality gate modes.
-- Documentation tasks require content review, not only Ruff/pytest.
+After T1.15 is accepted, begin Phase 2 with:
+
+    T2.1 — Inference Entry Point and Checkpoint Loading
+
+The goal is to move from training-only workflows to end-to-end use:
+
+    train -> checkpoint -> load -> infer -> explain prediction
